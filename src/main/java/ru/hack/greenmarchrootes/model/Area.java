@@ -29,7 +29,7 @@ public class Area {
     @ElementCollection
     private Map<String, Boolean> isIncludedPoints;
 
-
+    private static final double EPSILON = 1e-3;
     public Area(Station station) {
         main_station = station;
         isIncludedPoints = new HashMap<>();
@@ -57,24 +57,17 @@ public class Area {
         }
     }
 
-    /**
-     * Получает точки в количестве N штук
-     */
     public void calculateArea() {
-      calculateOnePart(1e-3, 1e-3);
-      calculateOnePart(1e-3, 0);
-      calculateOnePart(0, 1e-3);
-      calculateOnePart(-1e-3, -1e-3);
-      calculateOnePart(-1e-3, 0);
-      calculateOnePart(0, -1e-3);
+      calculateOnePart(EPSILON, EPSILON);
+      calculateOnePart(EPSILON, 0);
+      calculateOnePart(0, EPSILON);
+      calculateOnePart(-EPSILON, -EPSILON);
+      calculateOnePart(-EPSILON, 0);
+      calculateOnePart(0, -EPSILON);
 
     }
 
     public boolean isInner(double latitude, double longitude) {
-        Station nearestStation = Util.getNearestStation(longitude, latitude);
-        System.out.println("longitude:" + nearestStation.getLongitude() +",latitude: " + nearestStation.getLatitude());
-        System.out.println("main_station latitude == latitude: " + (nearestStation.getLatitude() == main_station.getLatitude()));
-        System.out.println("main_station longitude = longitude:" + (nearestStation.getLongitude() == main_station.getLongitude()));
         return Util.getNearestStation(longitude, latitude).equals(main_station);
     }
 

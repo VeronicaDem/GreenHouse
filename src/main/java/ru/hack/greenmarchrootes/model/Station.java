@@ -64,17 +64,7 @@ public class Station {
         }
         return res;
     }
-    public State calculateStateByMeasure(double min, double max, double measure) {
-        double avg = (max - min) / 2;
-        if(measure > avg * 1.5) return State.BAD;
-        else if(measure > avg) return State.MIDDLE;
-        else return State.GOOD;
-    }
-    public State calculateState(List<State> states) {
-        return states.contains(State.BAD) ? State.BAD :
-               states.contains(State.MIDDLE) ? State.MIDDLE :
-               State.GOOD;
-    }
+
     private double convertIntoDouble(Object measure) {
         try {
             return (Integer) measure;

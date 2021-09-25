@@ -21,6 +21,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import ru.hack.greenmarchrootes.logistics.Weighting.State;
+import ru.hack.greenmarchrootes.logistics.measuresStandard.Standard;
 import ru.hack.greenmarchrootes.model.Area;
 import ru.hack.greenmarchrootes.model.Station;
 
@@ -57,17 +58,26 @@ public class Util {
     public static final String X_Secret = "2a5663965f511252afbed1dcdb46d177f416c0df";
 
     public static final List<String> measuresNames = Arrays.asList(
-            "Температура",
+            "Температура", // UPPER = 30, MIDDLE = 20
             "Влажность",
             "СО2",
             "ЛОС",
             "Пыль pm 1.0",
             "Пыль pm 2.5"	,
-            "Пыль pm 10"	,
-            "Давление"	,
-            "AQI"	,
+            "Пыль pm 10"	, // MIDDLE = 16, UPPER = 20
+            "Давление"	, // UPPER = 737, MIDDLE = 703
+            "AQI"	, // UPPER = 101, MIDDLE = 51
             "Формальдегид"
             );
+    public static final String MAIN_ECO = "AQI";
+    public static final Map<String, Standard> measureToStandard = new HashMap<>();
+
+    public static void initializeStandards() {
+        measureToStandard.put("Температура", new Standard(30, 20));
+        measureToStandard.put("Пыль pm 10", new Standard(20, 16));
+        measureToStandard.put("Давление", new Standard(737, 703));
+        measureToStandard.put("AQI", new Standard(101, 51));
+    }
     public static Map<String, Object> getMeasurements(double lat, double lng) {
         HttpResponse response = null;
         Map<String, Object> res = new HashMap<String, Object>();
@@ -95,7 +105,7 @@ public class Util {
         return res;
     }
 
-    // Тут алгоритм высчитывания расстояний
+
     public static Station getNearestStation(double longitude, double latitude) {
         Station station = null;
         try {
@@ -121,45 +131,31 @@ public class Util {
         }
     }
 
-    private static void readFromExcel(String file, Map<String, JSONArray> dataOfStreet) throws Exception{
+    private static void readFromExcel(String file, Map<String, JSONObject> dataOfStreet) throws Exception{
         //NPOIFSFileSystem fs = new NPOIFSFileSystem(new File(file));
         Workbook myExcelBook = WorkbookFactory.create(new FileInputStream(file));
         Sheet sheet = myExcelBook.getSheetAt(0);
-        String numberOfMeasuring = file.substring(file.indexOf("_"), file.indexOf(".xls"));
-        String key = file.substring(0, file.indexOf("_"));
-        JSONArray jsonArray = dataOfStreet.get(key)==null ? new JSONArray() : dataOfStreet.get(key);
-        dataOfStreet.put(key, jsonArray);
-        JSONObject additionalInfo;
-        if(jsonArray.isEmpty()) {
-            additionalInfo = new JSONObject();
+        //String numberOfMeasuring = file.substring(file.indexOf("_"), file.indexOf(".xls"));
+        String key = file.substring(file.lastIndexOf("\\") + 1, file.indexOf("_"));
+        //JSONArray jsonArray = dataOfStreet.get(key)==null ? new JSONArray() : dataOfStreet.get(key);
+        JSONObject additionalInfo = dataOfStreet.get(key) == null ? new JSONObject() : dataOfStreet.get(key);
+        System.out.println("key : " + key);
+        String currentMeasureDate = sheet.getRow(sheet.getLastRowNum())
+                .getCell(0).getStringCellValue();
+        if(additionalInfo.isEmpty()) {
             Row row = sheet.getRow(0);
-            additionalInfo.put("currentMeasureDate", sheet.getRow(sheet.getLastRowNum() - 1)
-                                                                  .getCell(0).getStringCellValue());
-            jsonArray.put(additionalInfo);
-        } else {
-            additionalInfo = jsonArray.getJSONObject(0);
+            additionalInfo.put("currentMeasureDate", currentMeasureDate);
         }
        // jsonArray.put(new JSONObject().put("numberOfMeasuring", numberOfMeasuring));
 
         for(int i = 1; i < sheet.getLastRowNum(); i++) {
            Row row = sheet.getRow(i);
-            JSONObject dataOfRow = new JSONObject();
             String dateOfMeasuring = row.getCell(0).getStringCellValue();
-            dataOfRow.put("dateOfMeasuring", dateOfMeasuring);
             int numberOfCells = row.getPhysicalNumberOfCells();
             for(int j = 1; j < numberOfCells; j++) {
                 String nameOfColumn = sheet.getRow(0).getCell(j).getStringCellValue();
                 if(row.getCell(j) == null) continue;
                 double measure = row.getCell(j).getNumericCellValue();
-                dataOfRow.put(nameOfColumn, measure);
-                if(!additionalInfo.has("min" + nameOfColumn + dateOfMeasuring)||
-                        (Double)additionalInfo.get("min" + nameOfColumn + dateOfMeasuring) > measure) {
-                    additionalInfo.put("min" + nameOfColumn + dateOfMeasuring, measure);
-                }
-                if(!additionalInfo.has("max" + nameOfColumn + dateOfMeasuring)  ||
-                (Double)additionalInfo.get("max" + nameOfColumn + dateOfMeasuring) < measure) {
-                    additionalInfo.put("max" + nameOfColumn + dateOfMeasuring, measure);
-                }
                 if(!additionalInfo.has("min" + nameOfColumn)  || (Double)additionalInfo.get("min" + nameOfColumn) > measure) {
                     additionalInfo.put("min" + nameOfColumn, measure);
                 }
@@ -170,17 +166,29 @@ public class Util {
 
 
             }
-            dataOfRow.put("numberOfMeasuring", numberOfMeasuring);
-            jsonArray.put(dataOfRow);
+
 
         }
-
+        Row row = sheet.getRow(sheet.getLastRowNum());
+        int numberOfCells = row.getPhysicalNumberOfCells();
+        for(int j = 1; j < numberOfCells; j++) {
+            if(row.getCell(j) == null) continue;
+            String nameOfColumn = sheet.getRow(0).getCell(j).getStringCellValue();
+            double measure = row.getCell(j).getNumericCellValue();
+            if(!additionalInfo.has("min" + nameOfColumn + currentMeasureDate)  || (Double)additionalInfo.get("min" + nameOfColumn + currentMeasureDate) > measure) {
+                additionalInfo.put("min" + nameOfColumn + currentMeasureDate, measure);
+            }
+            if(!additionalInfo.has("max" + nameOfColumn + currentMeasureDate)  || (Double) additionalInfo.get("max" + nameOfColumn + currentMeasureDate) < measure) {
+                additionalInfo.put("max" + nameOfColumn + currentMeasureDate, measure);
+            }
+        }
+        dataOfStreet.put(key, additionalInfo);
         myExcelBook.close();
 
     }
     public static List<Station> getAllStations() {
       List<Station> res = new ArrayList<>();
-      Map<String, JSONArray> streetToMeasures = new HashMap<>();
+      Map<String, JSONObject> streetToMeasures = new HashMap<>();
       try {
          /* HttpResponse response = Request.Get("https://api.waqi.info/search/?token=" + TOKEN + "&keyword=moscow").execute().returnResponse();
           System.out.println("https://api.waqi.info/search/?token=" + TOKEN + "&keyword=moscow");
@@ -197,35 +205,42 @@ public class Util {
           for(int i = 0; i < lst.size(); i++) {
               readFromExcel(lst.get(i).getAbsolutePath(), streetToMeasures);
           }
+          if(streetToMeasures.isEmpty()) System.out.println("streetToMeasures is empty");
           for(String street : streetToMeasures.keySet()) {
               // простите, меня вынудил API
-              String bodyString = List.of(street).toString();
+              String bodyString = new JSONArray(List.of(street).toString()).toString();
               HttpResponse response = Request.Post("https://cleaner.dadata.ru/api/v1/clean/address")
                                              .addHeader("Authorization", AUTHORIZATION)
                                              .addHeader("X-Secret", X_Secret)
                                              .bodyString(bodyString, ContentType.APPLICATION_JSON)
                                              .execute().returnResponse();
               HttpEntity entity = response.getEntity();
+              System.out.println(EntityUtils.toString(entity));
               JSONObject reply = new JSONArray(EntityUtils.toString(entity)).getJSONObject(0);
-              double latitude = convertIntoDouble(reply.get("geo_lat"));
-              double longitude = convertIntoDouble(reply.get("geo_lon"));
+              double latitude = Double.parseDouble(reply.get("geo_lat").toString());
+              double longitude = Double.parseDouble(reply.get("geo_lon").toString());
               String nameOfStreetInOSM = (String) reply.get("result");
               Station station = new Station(longitude, latitude, street);
               List<State> states = new ArrayList<>();
               Map<String, State> badOrMiddleParameters = new HashMap<>();
-             String currentDateOfMeasuring = streetToMeasures.get(streetToMeasures).getJSONObject(0).get("currentMeasureDate").toString();
+             String currentDateOfMeasuring = streetToMeasures.get(street).get("currentMeasureDate").toString();
+              State stateOfMainEco = null;
               for(String measureName : measuresNames) {
-                  double min = convertIntoDouble(streetToMeasures.get(street).getJSONObject(0).get("min" + measureName));
-                  double max = convertIntoDouble(streetToMeasures.get(street).getJSONObject(0).get("max" + measureName));
-                  double currentMeasure = convertIntoDouble(streetToMeasures.get(street).getJSONObject(0).get("max" + measureName + currentDateOfMeasuring));
-                  State stateOfOneParameter = station.calculateStateByMeasure(min, max, currentMeasure);
-                  if(stateOfOneParameter == State.MIDDLE || stateOfOneParameter == State.BAD) {
-                      badOrMiddleParameters.put(measureName, stateOfOneParameter);
+                  double min = Double.parseDouble(streetToMeasures.get(street).get("min" + measureName).toString());
+                  double max = Double.parseDouble(streetToMeasures.get(street).get("max" + measureName).toString());
+                  double currentMeasure = (Double) streetToMeasures.get(street).get("max" + measureName + currentDateOfMeasuring);
+                  if(measureToStandard.get(measureName) != null) {
+                      State stateOfOneParameter = measureToStandard.get(measureName).calculateStateByOneMeasure(currentMeasure);
+                      if (stateOfOneParameter == State.MIDDLE || stateOfOneParameter == State.BAD) {
+                          badOrMiddleParameters.put(measureName, stateOfOneParameter);
+                      }
+                      states.add(stateOfOneParameter);
                   }
-                  states.add(stateOfOneParameter);
+                  if(measureName.equals(MAIN_ECO)) stateOfMainEco = measureToStandard.get(MAIN_ECO)
+                                                                      .calculateStateByOneMeasure(currentMeasure);
               }
-              State state = station.calculateState(states);
-              station.setState(state);
+
+              station.setState(stateOfMainEco);
               station.setBadOrMiddleParameters(badOrMiddleParameters);
               station.setNameOfStreetInOSM(nameOfStreetInOSM);
               res.add(station);
