@@ -11,6 +11,10 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.NPOIFSFileSystem;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -117,27 +121,20 @@ public class Util {
         }
     }
 
-    private static void readFromExcel(String file, Map<String, JSONArray> dataOfStreet) throws IOException{
-        NPOIFSFileSytem fs = new NPOIFSFileSystem(new File(file));
-        HSSFWorkbook myExcelBook = new HSSFWorkbook(fs);
-        HSSFSheet sheet = myExcelBook.getSheetAt(0);
-
-        Pattern pattern = Pattern.compile("\\d+_");
-        Matcher matcher = pattern.matcher(file);
-        String numberOfMeasuring = file.substring(matcher.start(), matcher.end() - 1);
+    private static void readFromExcel(String file, Map<String, JSONArray> dataOfStreet) throws Exception{
+        //NPOIFSFileSystem fs = new NPOIFSFileSystem(new File(file));
+        Workbook myExcelBook = WorkbookFactory.create(new FileInputStream(file));
+        Sheet sheet = myExcelBook.getSheetAt(0);
+        String numberOfMeasuring = file.substring(file.indexOf("_"), file.indexOf(".xls"));
         String key = file.substring(0, file.indexOf("_"));
         JSONArray jsonArray = dataOfStreet.get(key)==null ? new JSONArray() : dataOfStreet.get(key);
         dataOfStreet.put(key, jsonArray);
         JSONObject additionalInfo;
         if(jsonArray.isEmpty()) {
             additionalInfo = new JSONObject();
-            HSSFRow row = sheet.getRow(0);
+            Row row = sheet.getRow(0);
             additionalInfo.put("currentMeasureDate", sheet.getRow(sheet.getLastRowNum() - 1)
-                                                                  .getCell(0).getDateCellValue());
-            for(int i = 0; i < row.getPhysicalNumberOfCells(); i++) {
-                additionalInfo.put("min" + row.getCell(i).getStringCellValue(), Double.POSITIVE_INFINITY);
-                additionalInfo.put("max" + row.getCell(i).getStringCellValue(), -Double.POSITIVE_INFINITY);
-            }
+                                                                  .getCell(0).getStringCellValue());
             jsonArray.put(additionalInfo);
         } else {
             additionalInfo = jsonArray.getJSONObject(0);
@@ -145,34 +142,32 @@ public class Util {
        // jsonArray.put(new JSONObject().put("numberOfMeasuring", numberOfMeasuring));
 
         for(int i = 1; i < sheet.getLastRowNum(); i++) {
-            HSSFRow row = sheet.getRow(i);
+           Row row = sheet.getRow(i);
             JSONObject dataOfRow = new JSONObject();
-            Date dateOfMeasuring = row.getCell(0).getDateCellValue();
+            String dateOfMeasuring = row.getCell(0).getStringCellValue();
             dataOfRow.put("dateOfMeasuring", dateOfMeasuring);
             int numberOfCells = row.getPhysicalNumberOfCells();
             for(int j = 1; j < numberOfCells; j++) {
                 String nameOfColumn = sheet.getRow(0).getCell(j).getStringCellValue();
-                if(row.getCell(j).getStringCellValue() == "") continue;
+                if(row.getCell(j) == null) continue;
                 double measure = row.getCell(j).getNumericCellValue();
                 dataOfRow.put(nameOfColumn, measure);
-                if(additionalInfo.get("min" + nameOfColumn + dateOfMeasuring) == null) {
-                    additionalInfo.put("min" + nameOfColumn + dateOfMeasuring, Double.POSITIVE_INFINITY);
+                if(!additionalInfo.has("min" + nameOfColumn + dateOfMeasuring)||
+                        (Double)additionalInfo.get("min" + nameOfColumn + dateOfMeasuring) > measure) {
+                    additionalInfo.put("min" + nameOfColumn + dateOfMeasuring, measure);
                 }
-                if(additionalInfo.get("max" + nameOfColumn + dateOfMeasuring) == null) {
-                    additionalInfo.put("max" + nameOfColumn + dateOfMeasuring, -Double.POSITIVE_INFINITY);
+                if(!additionalInfo.has("max" + nameOfColumn + dateOfMeasuring)  ||
+                (Double)additionalInfo.get("max" + nameOfColumn + dateOfMeasuring) < measure) {
+                    additionalInfo.put("max" + nameOfColumn + dateOfMeasuring, measure);
                 }
-                if(convertIntoDouble(additionalInfo.get("min" + nameOfColumn)) > measure) {
+                if(!additionalInfo.has("min" + nameOfColumn)  || (Double)additionalInfo.get("min" + nameOfColumn) > measure) {
                     additionalInfo.put("min" + nameOfColumn, measure);
                 }
-                if(convertIntoDouble(additionalInfo.get("max" + nameOfColumn + dateOfMeasuring)) < measure) {
+                if(!additionalInfo.has("max" + nameOfColumn)  || (Double) additionalInfo.get("max" + nameOfColumn) < measure) {
                     additionalInfo.put("max" + nameOfColumn, measure);
                 }
-                if(convertIntoDouble(additionalInfo.get("min" + nameOfColumn + dateOfMeasuring)) > measure) {
-                    additionalInfo.put("min" + nameOfColumn, measure);
-                }
-                if(convertIntoDouble(additionalInfo.get("max" + nameOfColumn + dateOfMeasuring)) < measure) {
-                    additionalInfo.put("max" + nameOfColumn, measure);
-                }
+
+
 
             }
             dataOfRow.put("numberOfMeasuring", numberOfMeasuring);
@@ -218,7 +213,7 @@ public class Util {
               Station station = new Station(longitude, latitude, street);
               List<State> states = new ArrayList<>();
               Map<String, State> badOrMiddleParameters = new HashMap<>();
-              Date currentDateOfMeasuring = (Date) streetToMeasures.get(streetToMeasures).getJSONObject(0).get("currentMeasureDate");
+             String currentDateOfMeasuring = streetToMeasures.get(streetToMeasures).getJSONObject(0).get("currentMeasureDate").toString();
               for(String measureName : measuresNames) {
                   double min = convertIntoDouble(streetToMeasures.get(street).getJSONObject(0).get("min" + measureName));
                   double max = convertIntoDouble(streetToMeasures.get(street).getJSONObject(0).get("max" + measureName));
