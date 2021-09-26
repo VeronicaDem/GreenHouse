@@ -14,3 +14,4 @@
 * HTML, CSS, JS
 
 Ссылка на демо: https://veronicadem.github.io/greenhouse/
+Если что-то не видно, просим приблизить
