@@ -13,3 +13,4 @@
 * Java, Hibernate, PostgreSQL, JPA, Spring
 * HTML, CSS, JS
 
+Ссылка на демо: https://veronicadem.github.io/greenhouse/
