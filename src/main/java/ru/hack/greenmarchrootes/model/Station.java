@@ -65,6 +65,19 @@ public class Station {
         return res;
     }
 
+    @Override
+    public String toString() {
+        return "main_station: {" +
+                "id_station=" + id_station +
+                ", longitude=" + longitude +
+                ", latitude=" + latitude +
+                ", state=" + state +
+                ", nameOfStreet='" + nameOfStreet + '\'' +
+                ", badOrMiddleParameters=" + badOrMiddleParameters +
+                ", nameOfStreetInOSM='" + nameOfStreetInOSM + '\'' +
+                '}';
+    }
+
     private double convertIntoDouble(Object measure) {
         try {
             return (Integer) measure;

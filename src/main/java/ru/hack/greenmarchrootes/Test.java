@@ -84,7 +84,9 @@ public class Test {
         PointList pointList = rsp.getBest().getPoints();
         System.out.println("точки:" + pointList);*/
        // hopper.close();
-
+        Util.initializeStandards();
+        Util.initializeStreets();
+        System.out.println(Util.getAllStations());
 
     }
 }

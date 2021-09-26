@@ -29,7 +29,7 @@ public class Area {
     @ElementCollection
     private Map<String, Boolean> isIncludedPoints;
 
-    private static final double EPSILON = 1e-3;
+    private static final double EPSILON = 1e-2;
     public Area(Station station) {
         main_station = station;
         isIncludedPoints = new HashMap<>();

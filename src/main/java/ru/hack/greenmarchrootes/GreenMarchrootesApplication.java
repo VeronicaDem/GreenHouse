@@ -12,6 +12,7 @@ public class GreenMarchrootesApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(GreenMarchrootesApplication.class, args);
 		Util.initializeStandards();
+		Util.initializeStreets();
 	}
 
 }
