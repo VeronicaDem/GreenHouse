@@ -115,6 +115,7 @@ function init() {
                 [arrCoordinats[i], arrCoordinats[i + 1]],
                 200
             ], {
+                balloonContent: "Температура: " + temp + ";<br>Воздух: " + air + ";<br>Погода: " + withard + ";<br>Столпотворение: " + people + ";<br>Давление: " + press + ";<br>Криминогенность: " + criminal + ";<br>Рейтинг: " + rate + ";",
                 hintContent: "Температура: " + temp + ";<br>Воздух: " + air + ";<br>Погода: " + withard + ";<br>Столпотворение: " + people + ";<br>Давление: " + press + ";<br>Криминогенность: " + criminal + ";<br>Рейтинг: " + rate + ";"
             }, {
                 draggable: false,
