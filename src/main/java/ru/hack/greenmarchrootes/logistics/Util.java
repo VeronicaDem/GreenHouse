@@ -69,138 +69,10 @@ public class Util {
             "AQI"	, // UPPER = 101, MIDDLE = 51
             "Формальдегид"
             );
-    public static final Map<String, Double> streetToLng = new HashMap<>();
-    public static final Map<String, Double> streetToLat = new HashMap<>();
+
     public static final String MAIN_ECO = "AQI";
     public static final Map<String, Standard> measureToStandard = new HashMap<>();
 
-    public static void initializeStreets() {
-        streetToLng.put("1905 года улица", 37.5594649);
-        streetToLat.put("1905 года улица", 55.7616887);
-
-        streetToLng.put("Баррикадная улица", 37.5818858);
-        streetToLat.put("Баррикадная улица", 55.7596403);
-
-        streetToLng.put("Бережковская набережная", 37.564446);
-        streetToLat.put("Бережковская набережная", 55.738074);
-
-        streetToLng.put("Варшавское шоссе", 37.6246433);
-        streetToLat.put("Варшавское шоссе", 55.6211591);
-
-        streetToLng.put("Волгоградский проспект", 37.749274);
-        streetToLat.put("Волгоградский проспект", 55.707644);
-
-        streetToLng.put("Воробьёвская набережная", 37.539722);
-        streetToLat.put("Воробьёвская набережная", 55.717778);
-
-        streetToLng.put("Госпитальная набережная", 37.695043);
-        streetToLat.put("Госпитальная набережная", 55.771991);
-
-        streetToLng.put("Дмитровское шоссе", 37.520);
-        streetToLat.put("Дмитровское шоссе", 56.344);
-
-        streetToLng.put("Звенигородское шоссе", 37.524201);
-        streetToLat.put("Звенигородское шоссе", 55.767965);
-
-        streetToLng.put("Каширское шоссе", 37.7199742);
-        streetToLat.put("Каширское шоссе", 55.6054076);
-
-        streetToLng.put("Кетчерская улица", 37.829027);
-        streetToLat.put("Кетчерская улица", 55.744612);
-
-        streetToLng.put("Королева улица", 37.8256);
-        streetToLat.put("Королева улица", 55.9142);
-
-        streetToLng.put("Космодамианская набережная", 37.637);
-        streetToLat.put("Космодамианская набережная", 55.746);
-
-        streetToLng.put("Кремлевская набережная", 37.616953);
-        streetToLat.put("Кремлевская набережная", 55.748691);
-
-        streetToLng.put("Крымская набережная", 37.605122);
-        streetToLat.put("Крымская набережная", 55.689999);
-
-        streetToLng.put("Кутузовский проспект", 37.523);
-        streetToLat.put("Кутузовский проспект", 55.737);
-
-        streetToLng.put("Ленинградское шоссе", 37.497696);
-        streetToLat.put("Ленинградское шоссе", 55.818102);
-
-        streetToLng.put("Лужнецкая набережная", 37.559173);
-        streetToLat.put("Лужнецкая набережная", 55.711316);
-
-        streetToLng.put("Люблинская улица", 37.738135);
-        streetToLat.put("Люблинская улица", 55.680671);
-
-        streetToLng.put("Минское шоссе", 37.3848394);
-        streetToLat.put("Минское шоссе", 55.7134921);
-
-        streetToLng.put("Мосфильмовская улица", 37.5272);
-        streetToLat.put("Мосфильмовская улица", 55.7222);
-
-        streetToLng.put("Моховая улица", 37.611634);
-        streetToLat.put("Моховая улица", 55.753539);
-
-        streetToLng.put("Набережная Тараса Шевченко", 37.554035);
-        streetToLat.put("Набережная Тараса Шевченко", 55.750408);
-
-        streetToLng.put("Нагатинская набережная", 37.661392);
-        streetToLat.put("Нагатинская набережная", 55.685041);
-
-        streetToLng.put("Никитская Б. улица", 37.6041);
-        streetToLat.put("Никитская Б. улица", 55.7568);
-
-        streetToLng.put("Новодевичья набережная", 37.553194);
-        streetToLat.put("Новодевичья набережная", 55.728667);
-
-        streetToLng.put("Новый Арбат", 37.589096);
-        streetToLat.put("Новый Арбат", 55.753129);
-
-        streetToLng.put("Петровский бульвар", 37.617384);
-        streetToLat.put("Петровский бульвар", 55.767595);
-
-        streetToLng.put("Проспект Вернадского", 37.536);
-        streetToLat.put("Проспект Вернадского", 55.693);
-
-        streetToLng.put("Профсоюзная улица", 37.532565);
-        streetToLat.put("Профсоюзная улица", 55.649576);
-
-        streetToLng.put("Пятницкая улица", 37.6281967);
-        streetToLat.put("Пятницкая улица", 55.7382355);
-
-        streetToLng.put("Рождественский бульвар", 37.623);
-        streetToLat.put("Рождественский бульвар", 55.766);
-
-        streetToLng.put("Садовая-каретная улица", 37.60841);
-        streetToLat.put("Садовая-каретная улица", 55.772978);
-
-        streetToLng.put("Садовая-самотечная улица",  37.612);
-        streetToLat.put("Садовая-самотечная улица", 55.773);
-
-        streetToLng.put("Солженицына улица", 37.661716);
-        streetToLat.put("Солженицына улица", 55.743659);
-
-        streetToLng.put("Сретенский бульвар", 37.633886);
-        streetToLat.put("Сретенский бульвар", 55.766248);
-
-        streetToLng.put("Страстной бульвар", 37.607008);
-        streetToLat.put("Страстной бульвар", 55.766719);
-
-        streetToLng.put("Таганская улица", 37.664303);
-        streetToLat.put("Таганская улица", 55.739732);
-
-        streetToLng.put("Тверская улица", 37.606379);
-        streetToLat.put("Тверская улица", 55.763923);
-
-        streetToLng.put("Цветной бульвар", 37.622199);
-        streetToLat.put("Цветной бульвар", 55.770461);
-
-        streetToLng.put("Щелковское шоссе", 37.80139);
-        streetToLat.put("Щелковское шоссе", 55.81028);
-
-        streetToLng.put("Энтузиастов шоссе", 37.767896);
-        streetToLat.put("Энтузиастов шоссе", 55.761487);
-    }
     public static void initializeStandards() {
         measureToStandard.put("Температура", new Standard(30, 20));
         measureToStandard.put("Пыль pm 10", new Standard(20, 16));
@@ -238,7 +110,7 @@ public class Util {
     public static Station getNearestStation(double longitude, double latitude) {
         Station station = null;
         try {
-           /* HttpResponse response = Request.Get("https://suggestions.dadata.ru/suggestions/api/4_1/rs/geolocate/address?lat=" + latitude + "&lon=" + longitude)
+           HttpResponse response = Request.Get("https://suggestions.dadata.ru/suggestions/api/4_1/rs/geolocate/address?lat=" + latitude + "&lon=" + longitude)
                     .addHeader("Authorization", AUTHORIZATION)
                     .execute().returnResponse();
             int responseCode = response.getStatusLine().getStatusCode();
@@ -249,22 +121,9 @@ public class Util {
             String nameOfStreetInOSM = (String) new JSONObject(EntityUtils.toString(entity)).getJSONArray("suggestions").getJSONObject(0).get("value");
             station = new Station(nameOfStreetInOSM);
 
-            */
-            double min_distance = Double.POSITIVE_INFINITY;
-            double p = 0.017453292519943295;    // Math.PI / 180
-            for(String key : streetToLat.keySet()) {
-                var a = 0.5 - Math.cos((longitude - streetToLng.get(key)) * p) / 2 +
-                        Math.cos(streetToLng.get(key) * p) * Math.cos(streetToLat.get(key) * p) *
-                                (1 - Math.cos((longitude - streetToLat.get(key)) * p)) / 2;
 
-                double distance = 12742 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
-                if(min_distance > distance) {
-                    min_distance = distance;
-                    station = new Station(key);
-                }
-            }
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return station;
@@ -337,15 +196,8 @@ public class Util {
       List<Station> res = new ArrayList<>();
       Map<String, JSONObject> streetToMeasures = new HashMap<>();
       try {
-         /* HttpResponse response = Request.Get("https://api.waqi.info/search/?token=" + TOKEN + "&keyword=moscow").execute().returnResponse();
-          System.out.println("https://api.waqi.info/search/?token=" + TOKEN + "&keyword=moscow");
-          int responseCode = response.getStatusLine().getStatusCode();
-          HttpEntity entity = response.getEntity();
-          JSONObject reply = new JSONObject(EntityUtils.toString(entity));
-          JSONArray array = reply.getJSONArray("data");
-          System.out.println(array);
 
-          */
+
           File dir = new File("src/main/resources/Данные по датчикам/Данные по коробкам");
           File[] arrFiles = dir.listFiles();
           List<File> lst = Arrays.asList(arrFiles);
@@ -355,7 +207,7 @@ public class Util {
           if(streetToMeasures.isEmpty()) System.out.println("streetToMeasures is empty");
           for(String street : streetToMeasures.keySet()) {
               // простите, меня вынудил API
-              /*String bodyString = new JSONArray(List.of(street).toString()).toString();
+              String bodyString = new JSONArray(List.of(street).toString()).toString();
               HttpResponse response = Request.Post("https://cleaner.dadata.ru/api/v1/clean/address")
                                              .addHeader("Authorization", AUTHORIZATION)
                                              .addHeader("X-Secret", X_Secret)
@@ -370,19 +222,9 @@ public class Util {
               double longitude = Double.parseDouble(reply.get("geo_lon").toString());
               String nameOfStreetInOSM = (String) reply.get("result");
 
+               Station station = new Station(longitude, latitude);
 
 
-              double latitude = Double.parseDouble(reply.get("geo_lat").toString());
-              double longitude = Double.parseDouble(reply.get("geo_lon").toString());
-              String nameOfStreetInOSM = (String) reply.get("result");
-              Station station = new Station(longitude, latitude, street);
-
-               */
-              String nameOfStreetInOSM = street;
-              System.out.println(street);
-              double latitude = streetToLat.get(street);
-              double longitude = streetToLng.get(street);
-              Station station = new Station(longitude, latitude, street);
               List<State> states = new ArrayList<>();
               Map<String, State> badOrMiddleParameters = new HashMap<>();
              String currentDateOfMeasuring = streetToMeasures.get(street).get("currentMeasureDate").toString();
